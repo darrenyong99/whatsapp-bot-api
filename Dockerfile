@@ -1,5 +1,6 @@
 FROM node:18-slim
 
+# Install dependencies for Puppeteer Chromium
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -26,13 +27,16 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Copy and install node modules
 COPY package*.json ./
 RUN npm install
 
+# Copy the rest of the app
 COPY . .
 
+# Persist auth session
 VOLUME ["/app/.wwebjs_auth"]
 
 EXPOSE 3000
 
-CMD ["node", "index.js"]  # 👈 Replace index.js with your actual main file
+CMD ["node", "index.js"]
