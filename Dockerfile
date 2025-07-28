@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Install required Chromium dependencies
+# Install required dependencies for Puppeteer Chromium
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     libu2f-udev \
     libvulkan1 \
+    libdrm2 \            # 👈 this fixes your error
     --no-install-recommends && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -37,7 +38,6 @@ COPY . .
 # Persist session data
 VOLUME ["/app/.wwebjs_auth"]
 
-# Expose port
 EXPOSE 3000
 
 CMD ["node", "index.js"]
