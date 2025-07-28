@@ -1,27 +1,20 @@
-import qrcode from 'qrcode-terminal';
-import { Client, LocalAuth } from 'whatsapp-web.js';
+// index.js
+import pkg from 'whatsapp-web.js';
+const { Client, LocalAuth } = pkg;
 
 const client = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: {
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    }
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  }
 });
 
 client.on('qr', (qr) => {
-    qrcode.generate(qr, { small: true });
-    console.log('📱 Scan the QR code above to authenticate WhatsApp');
+  console.log('QR RECEIVED', qr);
 });
 
 client.on('ready', () => {
-    console.log('✅ WhatsApp bot is ready!');
-});
-
-client.on('message', msg => {
-    if (msg.body.toLowerCase() === 'hi') {
-        msg.reply('Hello! This is an automated response 🤖');
-    }
+  console.log('Client is ready!');
 });
 
 client.initialize();
