@@ -1,54 +1,48 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const express = require('express');
+const fs = require('fs');
 const app = express();
-const port = 3000;
 
-let lastQR = null;
+let latestQR = null;
 
 const client = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: {
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
-        ]
-    }
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+      "--disable-gpu"
+    ],
+    executablePath: '/usr/bin/chromium' // Point to system Chromium
+  }
 });
 
-client.on('qr', (qr) => {
-    lastQR = qr;
-    qrcode.generate(qr, { small: true });
-    console.log('QR RECEIVED', qr);
+client.on('qr', qr => {
+  latestQR = qr;
+  qrcode.generate(qr, { small: true });
 });
 
 client.on('ready', () => {
-    console.log('Client is ready!');
-});
-
-client.on('message', message => {
-    if (message.body === 'ping') {
-        message.reply('pong');
-    }
+  console.log('WhatsApp bot is ready!');
 });
 
 client.initialize();
 
 app.get('/qr', (req, res) => {
-    if (lastQR) {
-        res.send(`<h1>Scan this QR</h1><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(lastQR)}" />`);
-    } else {
-        res.send('QR not generated yet. Please wait.');
-    }
+  if (latestQR) {
+    res.send(`<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${latestQR}" />`);
+  } else {
+    res.send('QR code not generated yet. Please wait...');
+  }
 });
 
-app.listen(port, () => {
-    console.log(`QR server running at http://localhost:${port}`);
+app.listen(3000, () => {
+  console.log('QR server running at http://localhost:3000');
 });
