@@ -4,8 +4,8 @@ services:
   whatsapp-bot:
     build: .
     container_name: whatsapp-bot
+    ports:
+      - "3000:3000"
     volumes:
-      - ./.wwebjs_auth:/app/.wwebjs_auth
-    shm_size: 2gb
-    cap_add:
-      - SYS_ADMIN
+      - ./session:/app/.wwebjs_auth
+    restart: unless-stopped
