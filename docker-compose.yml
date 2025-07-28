@@ -1,24 +1,11 @@
-FROM node:18-alpine
+version: '3.8'
 
-# Install Chromium and dependencies
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
-
-# Chromium path for puppeteer
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm install
-
-COPY . .
-
-VOLUME ["/app/.wwebjs_auth"]
-
-CMD ["npm", "start"]
+services:
+  whatsapp-bot:
+    build: .
+    container_name: whatsapp-bot
+    volumes:
+      - ./.wwebjs_auth:/app/.wwebjs_auth
+    shm_size: 2gb
+    cap_add:
+      - SYS_ADMIN
