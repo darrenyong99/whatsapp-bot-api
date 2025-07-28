@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Puppeteer Chromium dependencies
+# Install dependencies for puppeteer
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -18,29 +18,23 @@ RUN apt-get update && apt-get install -y \
     libxcomposite1 \
     libxdamage1 \
     libxrandr2 \
-    libxshmfence1 \
-    libgbm1 \
-    libdrm2 \
     xdg-utils \
     libu2f-udev \
     libvulkan1 \
+    libdrm2 \
     --no-install-recommends && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Working directory
 WORKDIR /app
 
-# Copy dependencies and install
 COPY package*.json ./
 RUN npm install
 
-# Copy rest of the app
 COPY . .
 
-# Persist session
+# Persist session data
 VOLUME ["/app/.wwebjs_auth"]
 
-# Expose port
 EXPOSE 3000
 
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
