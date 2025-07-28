@@ -1,6 +1,5 @@
 FROM node:18-slim
 
-# Install dependencies for puppeteer
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -32,9 +31,8 @@ RUN npm install
 
 COPY . .
 
-# Persist session data
 VOLUME ["/app/.wwebjs_auth"]
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]  # 👈 Replace index.js with your actual main file
