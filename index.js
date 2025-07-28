@@ -1,45 +1,49 @@
-const { Client } = require('whatsapp-web.js');
 const express = require('express');
 const qrcode = require('qrcode');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
-let qrCodeString = '';
+let qrCodeData = null;
 
 const client = new Client({
+    authStrategy: new LocalAuth({
+        dataPath: './.wwebjs_auth'
+    }),
     puppeteer: {
         headless: true,
-        args: ['--no-sandbox'],
-    },
-    authStrategy: new require('whatsapp-web.js').LocalAuth()
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    }
 });
 
-client.on('qr', (qr) => {
-    qrCodeString = qr;
-    console.log('QR RECEIVED', qr);
+client.on('qr', async (qr) => {
+    console.log('QR RECEIVED');
+    qrCodeData = await qrcode.toDataURL(qr);
 });
 
 client.on('ready', () => {
-    console.log('✅ WhatsApp is ready!');
+    console.log('WhatsApp client is ready!');
+});
+
+client.on('authenticated', () => {
+    console.log('Authenticated');
+});
+
+client.on('auth_failure', () => {
+    console.error('Auth failed');
 });
 
 client.initialize();
 
-// Serve QR code as image
-app.get('/qr', async (req, res) => {
-    if (!qrCodeString) return res.send('QR not yet generated. Please wait...');
-    const qrImage = await qrcode.toDataURL(qrCodeString);
-    const html = `
-        <html>
-        <body style="text-align:center;">
-            <h2>Scan QR with WhatsApp</h2>
-            <img src="${qrImage}" />
-        </body>
-        </html>`;
-    res.send(html);
+app.get('/qr', (req, res) => {
+    if (qrCodeData) {
+        res.send(`<h2>Scan QR Code:</h2><img src="${qrCodeData}" />`);
+    } else {
+        res.send('<h3>QR not generated yet. Refresh in a few seconds.</h3>');
+    }
 });
 
-app.listen(port, () => {
-    console.log(`🚀 Visit http://localhost:${port}/qr to scan QR`);
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
 });
