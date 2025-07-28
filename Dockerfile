@@ -22,8 +22,10 @@ RUN apt-get update && apt-get install -y \
     libu2f-udev \
     libvulkan1 \
     libdrm2 \
+    **libgbm1** \   # 👈 This is the missing package
     --no-install-recommends && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /app
 
