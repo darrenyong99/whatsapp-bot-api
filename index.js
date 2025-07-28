@@ -14,7 +14,7 @@ client.on('qr', (qr) => {
 });
 
 client.on('ready', () => {
-  console.log('Client is ready!');
+  console.log('✅ WhatsApp client is ready!');
 });
 
 client.initialize();
