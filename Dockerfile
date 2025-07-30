@@ -1,9 +1,6 @@
-FROM node:18-slim
-
-# =================== Dockerfile ===================
 FROM node:18-bullseye
 
-# Install dependencies for Puppeteer (Chrome headless)
+# Install Puppeteer dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -25,18 +22,19 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# Set working dir
 WORKDIR /app
 
-# Copy files
+# Install dependencies
 COPY package*.json ./
 RUN npm install
+
+# Copy the app
 COPY . .
 
-# Use a non-root user (optional but safer)
+# Use safer user
 RUN groupadd -r bot && useradd -r -g bot bot
 USER bot
 
-# Start the bot
+# Run the bot
 CMD ["node", "index.js"]
-
