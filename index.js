@@ -6,7 +6,8 @@ const axios = require('axios');
 const app = express();
 const port = 3000;
 
-// ✅ Your n8n Webhook URL:
+app.use(express.json()); // 🔥 Required for POST /send-message
+
 const N8N_WEBHOOK_URL = 'http://115.132.39.121:5678/webhook/whatsapp-in';
 
 const client = new Client({
@@ -26,7 +27,7 @@ client.on('ready', () => {
   console.log('WhatsApp bot is ready!');
 });
 
-// 🔁 Send incoming messages to n8n webhook
+// 🔁 Send incoming WhatsApp messages to n8n webhook
 client.on('message', async (message) => {
   console.log(`Message from ${message.from}: ${message.body}`);
   try {
@@ -40,7 +41,18 @@ client.on('message', async (message) => {
   }
 });
 
-client.initialize();
+// ✅ POST endpoint to send WhatsApp message via API
+app.post('/send-message', async (req, res) => {
+  const { to, message } = req.body;
+
+  try {
+    const sentMsg = await client.sendMessage(to, message);
+    return res.status(200).json({ success: true, id: sentMsg.id._serialized });
+  } catch (error) {
+    console.error('Send message error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 app.get('/', (req, res) => {
   res.send('WhatsApp Bot is running!');
@@ -49,3 +61,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Express server listening on port ${port}`);
 });
+
+client.initialize();
