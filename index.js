@@ -6,8 +6,8 @@ const axios = require('axios');
 const app = express();
 const port = 3000;
 
-// Replace with your actual n8n webhook URL
-const N8N_WEBHOOK_URL = 'https://your-n8n-domain/webhook/whatsapp-in';
+// ✅ Your n8n Webhook URL:
+const N8N_WEBHOOK_URL = 'http://115.132.39.121:5678/webhook/whatsapp-in';
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -26,9 +26,9 @@ client.on('ready', () => {
   console.log('WhatsApp bot is ready!');
 });
 
+// 🔁 Send incoming messages to n8n webhook
 client.on('message', async (message) => {
   console.log(`Message from ${message.from}: ${message.body}`);
-
   try {
     await axios.post(N8N_WEBHOOK_URL, {
       from: message.from,
