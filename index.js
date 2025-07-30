@@ -7,7 +7,7 @@ const app = express();
 const port = 3000;
 
 // ✅ Your n8n Webhook URL:
-const N8N_WEBHOOK_URL = 'http://115.132.39.121:5678/webhook/whatsapp-in';
+const N8N_WEBHOOK_URL = 'http://115.132.39.121:5678/webhook-test/whatsapp-in';
 
 const client = new Client({
   authStrategy: new LocalAuth(),
