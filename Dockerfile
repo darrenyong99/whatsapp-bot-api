@@ -33,8 +33,8 @@ RUN npm install
 COPY . .
 
 # Use safer user
-RUN groupadd -r bot && useradd -r -g bot bot
-USER bot
+#RUN groupadd -r bot && useradd -r -g bot bot
+#USER bot
 
 # Run the bot
 CMD ["node", "index.js"]
