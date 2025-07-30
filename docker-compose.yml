@@ -7,5 +7,5 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
-    shm_size: '1gb'
+      - .wwebjs_auth:/home/bot/.wwebjs_auth
+    restart: always
