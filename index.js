@@ -49,13 +49,18 @@ client.on('message', async (message) => {
 
 // ✅ Receive reply message from n8n and send via WhatsApp
 app.post('/send-message', async (req, res) => {
-  const { to, message } = req.body;
+  let { to, message } = req.body;
 
   console.log('📨 Received POST /send-message with:', req.body);
 
   if (!to || !message) {
     console.warn('⚠️ Missing "to" or "message" in body');
     return res.status(400).json({ error: 'Missing "to" or "message" in body' });
+  }
+
+  // ✅ Fix: Ensure proper WhatsApp ID format
+  if (!to.endsWith('@c.us')) {
+    to = `${to}@c.us`;
   }
 
   try {
